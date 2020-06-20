@@ -1,1 +1,175 @@
+<html>
+  <head>
+<style>
 
+</style>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js'></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/react-router-dom/5.0.0/react-router-dom.js'></script>
+ 
+    <style>
+        body {
+            font-family: verdana;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            color: dodgerblue;
+        }
+        hr {
+            border: .5px solid dodgerblue;
+        }
+  
+        .productsList {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-around;
+          
+        }
+  
+    </style>
+</head>
+
+  <body>
+    <h1>Acme Products</h1>
+    <div id='root'></div>
+    <script type='text/babel'>
+    const root = document.querySelector('#root');
+    const { render } = ReactDOM;
+    const { Component } = React;
+    const {HashRouter, Route, Link, Switch, Redirect } = ReactRouterDOM;
+    
+    const Nav = ({ path }) => {
+        return (
+            <nav> 
+                <Link to='/' className ={ path === '/' ? 'selected': ''}>Home</Link>
+                <Link to='/products' className = { path === '/products' ? 'selected': ''}>Products</Link>
+                <Link to='/create' className = { path === '/create' ? 'selected': ''}>Create a Product</Link>
+                </nav>
+        )
+    }
+
+    const Home = () => {
+        return (
+            <h2>Home</h2>
+        )
+    }
+
+    // const destroy = (productToDestroy) => {
+    //     axios.delete(`api/products/${productToDestroy.id}`)
+    //         .then( () => this.setState({ products: products.filter(product => product.id !== productToDestroy.id)}))
+    //         .then(() => render())
+    // }
+
+    // const Products = ({ products }) => {
+    //     return(
+    //         <div>
+    //             <h2>Products</h2>
+    //             <div className = 'productsList'>
+    //             {
+    //                 products.map( product => <div key={ product.id }>
+    //                     <hr></hr>{ product.name } <button onClick={ () => destroy(product) }>Destroy</button>
+    //                     </div>)
+    //             }
+    //             <hr></hr>
+    //             </div>
+    //             </div>
+                
+    //     )
+    // }
+    // const createProduct = (ev) => {
+    //     ev.preventDefault();
+    //     axios.post('/api/products', { name })
+    //         .then( response => this.setState({ products: [response.data, ...products]}))
+    //         .then( ()=> this.setState({ name: ''}));
+    // }
+    // const Create = ({ products }) => {
+    //     return (
+    //         <div>
+    //         <h2>Create a Product</h2>
+    //         <form onSubmit ={ createProduct }>
+    //             <input value={ name } onChange ={ev => this.setState({ name: ev.target.value })} />
+    //             <button disabled = {!name}>Create</button>
+    //             </form>
+    //         </div>
+    //     )
+    // }
+
+    class App extends Component {
+        constructor() {
+            super();
+            this.state = {
+                products: [],
+                name: ''
+            }   
+            this.destroy = this.destroy.bind(this);
+            this.createProduct = this.createProduct.bind(this);
+        }
+       async componentDidMount() {
+            axios.get('http://localhost:3000/api/products').then(data => this.setState({products: data.data}));
+        }
+
+       async destroy (productToDestroy) {
+                const { products } = this.state;
+                axios.delete(`/api/products/${productToDestroy.id}`)
+                .then( () => this.setState({ products: products.filter(product => product.id !== productToDestroy.id)}))
+                .then( () => this.forceUpdate());
+             }
+
+        async createProduct (ev) {
+            ev.preventDefault();
+            const { products, name } = this.state;
+             axios.post('/api/products', { name })
+                .then( response => {this.setState({ products: [...products, response.data], name: ''})})
+                .catch()
+    }
+
+        render() {
+            const { products, name } = this.state;
+            
+             const Products = ({ products }) => {
+        return(
+            <div>
+                <h2>Products</h2>
+                <div className = 'productsList'>
+                {
+                    products.map( product => <div key={ product.id }>
+                        <hr></hr>{ product.name } <button onClick={ () => this.destroy(product) }>Destroy</button>
+                        </div>)
+                }
+                <hr></hr>
+                </div>
+                </div>
+                
+        )
+    }
+    
+    const Create = ({ products, name }) => {
+        return (
+            <div>
+            <h2>Create a Product</h2>
+            <form onSubmit ={ this.createProduct }>
+                <input value= { name } onChange ={(ev) => this.setState({ name: ev.target.value })} />
+                <button disabled = {!name}>Create</button>
+                </form>
+            </div>
+        )
+    }
+            return (
+                <HashRouter>
+                    <Route render={ ({ location })=> <Nav path={ location.pathname} />} />
+                    <Route path='/' exact render ={ () => <Home />} />
+                    <Route path='/products' render ={ ()=> <Products products={ products } />} />
+                    <Route path ='/create' render ={ () => <Create />} />   
+                </HashRouter>
+                    
+            )
+        }
+    }
+      
+      render(<App />, root);
+    </script>
+  </body>
+</html>

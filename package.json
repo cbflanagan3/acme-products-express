@@ -1,0 +1,24 @@
+{
+  "name": "acme-products-express",
+  "version": "1.0.0",
+  "description": "Acme Products Weekend Project",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "uuid": "^7.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cbflanagan3/acme-products-express.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cbflanagan3/acme-products-express/issues"
+  },
+  "homepage": "https://github.com/cbflanagan3/acme-products-express#readme"
+}
